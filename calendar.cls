@@ -10,6 +10,8 @@
 
 \RequirePackage[margin=3mm, verbose,nohead,nofoot]{geometry}
 
+\RequirePackage{translator}
+
 % need \StrChar macro for the first char of each day
 \RequirePackage{xstring}
 
@@ -117,6 +119,25 @@
     \StrChar{\pgfcalendarweekdayshortname{#1}}{1}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand*{\numToStr}[1]{
+\ifcase\numexpr#1\relax
+    zero\or
+    one\or
+    two\or
+    three\or
+    four\or
+    five\or
+    six\or
+    seven\or
+    eight\or
+    nine\or
+    ten\or
+    eleven\or
+    twelve\else
+    default\fi
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %% Typeset a month
 %%
@@ -181,7 +202,7 @@
         %%%%%%%%%%
         \node[anchor=south west] (eventline)
             at([yshift=.5\paperheight-.5\textheight, xshift=.5\paperwidth-.5\textwidth]current page.south west)%
-                {\small\textit{\pgfkeysvalueof{/tikz/calendar/\pgfcalendarmonthname{#2}}}};
+                {\small\textit{\pgfkeysvalueof{/tikz/calendar/\numToStr{#2}}}};
     \end{tikzpicture}
     \clearpage
 }
@@ -205,10 +226,10 @@
     %% Append the event description to the eventline.
     %% Initialise the pgf key if not already defined
     %%%%%%%%%%
-    \pgfkeysifdefined{/tikz/calendar/\pgfcalendarmonthname{#1}}{%
-        \tikzset{/tikz/calendar/\pgfcalendarmonthname{#1}/.append={,\ \pgfcalendarmonthshortname{#1} #2: #3}}
+    \pgfkeysifdefined{/tikz/calendar/\numToStr{#1}}{%
+        \tikzset{/tikz/calendar/\numToStr{#1}/.append={,\ \pgfcalendarmonthshortname{#1} #2: #3}}
     }{%
         \pgfkeys{/tikz/.cd,%
-            /tikz/calendar/\pgfcalendarmonthname{#1}/.initial={\pgfcalendarmonthshortname{#1} #2: #3}
+            /tikz/calendar/\numToStr{#1}/.initial={\pgfcalendarmonthshortname{#1} #2: #3}
     }}%
 }
