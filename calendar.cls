@@ -1,4 +1,4 @@
-\ProvidesClass{calendar}[2018/10/03 Mein Kalendar]
+\ProvidesClass{calendar}[2018/10/03 A wallcalendar class for fun]
 \NeedsTeXFormat{LaTeX2e}
 \LoadClassWithOptions{article}
 
@@ -33,21 +33,12 @@
 \pgfkeys{/tikz/.cd,%
     calendar height/.initial=.15\paperheight,
     calendar height/.get=\calheight,
-    calendar width/.initial=.9\textwidth,
-    calendar width/.get=\calwidth,
-    calendar width/.store in=\calwidth,
+    calendar height/.store in=\calheight,
     calendar opacity/.initial=0.6,
-    calendar opacity/.get=\calopacity,
-    calendar opacity/.store in=\calopacity,
-    calendar month/.initial=1,
-    calendar month/.get=\calmonth,
-    calendar month/.store in=\calmonth,
     calendar year/.initial=2020,
     calendar year/.get=\calyear,
     calendar year/.store in=\calyear,
     calendar title/.initial=\calyear,
-    calendar title/.get=\caltitle,
-    calendar title/.store in=\caltitle,
     calendar filter/.initial={}
 }
 
@@ -71,6 +62,13 @@
     \tikzset{/tikz/calendar year=#1}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Set the calendar height
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\setHeight}[1]{%
+    \tikzset{/tikz/calendar height=#1}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %% Create a cover page
 %%
@@ -91,7 +89,7 @@
         %%%%%%%%%%
         \node[anchor=center,
             fill=white,
-            fill opacity=\calopacity,
+            fill opacity=\pgfkeysvalueof{/tikz/calendar opacity},
             minimum height=0.25*\textheight,
             minimum width=0.8*\textwidth] (background)
             at ([yshift=.25\textheight]current page.south) {};
@@ -104,7 +102,7 @@
                     \centering
                     \Huge\calyear\\
                     \vspace*{.05\textheight}
-                    \huge{\caltitle}
+                    \huge{\pgfkeysvalueof{/tikz/calendar title}}
                 \end{minipage}
             };
     \end{tikzpicture}
@@ -115,9 +113,7 @@
 %% Helper function
 %% TODO remove that since it is used only once
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-\newcommand*{\FirstChar}[1]{%
-    \StrChar{\pgfcalendarweekdayshortname{#1}}{1}
-}
+\newcommand*{\FirstChar}[1]{\StrChar{\pgfcalendarweekdayshortname{#1}}{1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand*{\numToStr}[1]{
@@ -153,38 +149,45 @@
             at ([yshift=4mm]current page.center) {
             \includegraphics[width=\paperwidth]{#1}
         };
+
+        \coordinate (topCenter) at ([yshift=\calheight]current page.south);
+        \coordinate (bottomCenter) at (current page.south);
+
         %%%%%%%%%%
         %% The calendar bg
         %%%%%%%%%%
         \node[anchor=north,
             fill=white,
-            fill opacity=\calopacity,
+            fill opacity=\pgfkeysvalueof{/tikz/calendar opacity},
             minimum height=\calheight,
             minimum width=\paperwidth] (background)
-            at ([yshift=\calheight]current page.south) {};
+            at (topCenter) {};
+
         %%%%%%%%%%
         %% Left month label
         %%%%%%%%%%
         \node[anchor=north west,
             minimum height=0.05\textheight]
             (monthname)
-            at ([yshift=\calheight,xshift=.5\paperwidth-.5\textwidth]current page.south west) {%
+            at ([xshift=.5\paperwidth-\textwidth]topCenter) {%
                 \huge\pgfcalendarmonthname{#2}
             };
+
         %%%%%%%%%%
         %% Right year label
         %%%%%%%%%%
         \node[anchor=north east,
             minimum height=0.05\textheight] (yearname)
-            at ([yshift=\calheight,xshift=-.5\paperwidth+.5\textwidth]current page.south east) {%
+            at ([xshift=-.5\paperwidth+\textwidth]topCenter) {%
                 \huge\calyear
             };
+
         %%%%%%%%%%
         %% Wrapper is needed to
         %% center it to the page
         %%%%%%%%%%
         \node[anchor=center] (calendar-wrapper)
-            at ($(current page.south)!0.9!(background)$) {
+            at ($(bottomCenter)!0.5!(topCenter)$) {
                 \tikz[every day/.style={anchor=mid}] {\calendar[%
                     name=mycal,
                     dates=\calyear-#2-01 to \calyear-#2-last,
@@ -229,7 +232,6 @@
     \pgfkeysifdefined{/tikz/calendar/\numToStr{#1}}{%
         \tikzset{/tikz/calendar/\numToStr{#1}/.append={,\ \pgfcalendarmonthshortname{#1} #2: #3}}
     }{%
-        \pgfkeys{/tikz/.cd,%
-            /tikz/calendar/\numToStr{#1}/.initial={\pgfcalendarmonthshortname{#1} #2: #3}
-    }}%
+        \tikzset{/tikz/calendar/\numToStr{#1}/.initial={\pgfcalendarmonthshortname{#1} #2: #3}}
+    }%
 }
