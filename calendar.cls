@@ -82,7 +82,7 @@
         %%%%%%%%%%
         \node[anchor=north] (names)
             at ([yshift=4mm]current page.north) {
-            %\includegraphics[width=\paperwidth]{#1}
+            \includegraphics[width=\paperwidth]{#1}
         };
         %%%%%%%%%%
         %% The calendar bg
@@ -130,7 +130,7 @@
         %%%%%%%%%%
         \node[anchor=center] (names)
             at ([yshift=4mm]current page.center) {
-            %\includegraphics[width=\paperwidth]{#1}
+            \includegraphics[width=\paperwidth]{#1}
         };
         %%%%%%%%%%
         %% The calendar bg
