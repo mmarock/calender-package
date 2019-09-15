@@ -170,8 +170,7 @@
                     day xshift=0.032*\textwidth, % times 0.03 is approx 1/33, 0.032 is 1/31
                     day list right, day code={% print weekday character + day number below
                         \node[name=\pgfcalendarsuggestedname,every day]{\tikzdaytext};
-                        \node[name=\pgfcalendarsuggestedname-day,every day, anchor=mid]
-                            at ([yshift=.5cm]\pgfcalendarsuggestedname.mid) {\FirstChar{\pgfcalendarcurrentweekday}};
+                        \node[name=thisday,every day, anchor=mid] at (0,0.5cm) {\pgfcalendarweekdayshortname{\pgfcalendarcurrentweekday}};
                     }]
                     if (weekend) [text=red!60!black]
                     \pgfkeysvalueof{/tikz/calendar filter};
