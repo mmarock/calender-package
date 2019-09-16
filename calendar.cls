@@ -84,10 +84,10 @@
             at (current page.center) {
             \if\paperwidth>\paperheight
                 %landscape
-                \includegraphics[width=\paperwidth]{#1}
+                \includegraphics[height=\paperheight]{#1}
             \else
                 %portrait
-                \includegraphics[height=\paperheight]{#1}
+                \includegraphics[width=\paperwidth]{#1}
             \fi
         };
         %%%%%%%%%%
@@ -155,10 +155,10 @@
             at (current page.center) {
             \if\paperwidth>\paperheight
                 %landscape
-                \includegraphics[width=\paperwidth]{#1}
+                \includegraphics[height=\paperheight]{#1}
             \else
                 %portrait
-                \includegraphics[height=\paperheight]{#1}
+                \includegraphics[width=\paperwidth]{#1}
             \fi
         };
 
