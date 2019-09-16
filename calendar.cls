@@ -8,7 +8,7 @@
 %%   layout: landscape OR portrait
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\RequirePackage[margin=3mm, verbose,nohead,nofoot]{geometry}
+\RequirePackage[margin=2mm, verbose,nohead,nofoot]{geometry}
 
 \RequirePackage{translator}
 
@@ -80,9 +80,15 @@
         %%%%%%%%%%
         %% The image is first param.
         %%%%%%%%%%
-        \node[anchor=north] (names)
-            at ([yshift=4mm]current page.north) {
-            \includegraphics[width=\paperwidth]{#1}
+        \node[anchor=center] (names)
+            at (current page.center) {
+            \if\paperwidth>\paperheight
+                %landscape
+                \includegraphics[width=\paperwidth]{#1}
+            \else
+                %portrait
+                \includegraphics[height=\paperheight]{#1}
+            \fi
         };
         %%%%%%%%%%
         %% The calendar bg
@@ -146,8 +152,14 @@
         %% The image is first param.
         %%%%%%%%%%
         \node[anchor=center] (names)
-            at ([yshift=4mm]current page.center) {
-            \includegraphics[width=\paperwidth]{#1}
+            at (current page.center) {
+            \if\paperwidth>\paperheight
+                %landscape
+                \includegraphics[width=\paperwidth]{#1}
+            \else
+                %portrait
+                \includegraphics[height=\paperheight]{#1}
+            \fi
         };
 
         \coordinate (topCenter) at ([yshift=\calheight]current page.south);
