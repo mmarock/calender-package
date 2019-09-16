@@ -82,7 +82,13 @@
         %%%%%%%%%%
         \node[anchor=center] (names)
             at (current page.center) {
-            \includegraphics[width=\paperwidth]{#1}
+            \if\paperwidth>\paperheight
+                %landscape
+                \includegraphics[width=\paperwidth]{#1}
+            \else
+                %portrait
+                \includegraphics[height=\paperheight]{#1}
+            \fi
         };
         %%%%%%%%%%
         %% The calendar bg
@@ -147,8 +153,13 @@
         %%%%%%%%%%
         \node[anchor=center] (names)
             at (current page.center) {
-            \includegraphics[width=\paperwidth]{#1}
-
+            \if\paperwidth>\paperheight
+                %landscape
+                \includegraphics[width=\paperwidth]{#1}
+            \else
+                %portrait
+                \includegraphics[height=\paperheight]{#1}
+            \fi
         };
 
         \coordinate (topCenter) at ([yshift=\calheight]current page.south);
