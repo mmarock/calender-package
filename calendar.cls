@@ -36,10 +36,10 @@
     calendar height/.store in=\calheight,
     calendar opacity/.initial=0.6,
     calendar year/.initial=2020,
-    calendar year/.get=\calyear,
-    calendar year/.store in=\calyear,
-    calendar title/.initial=\calyear,
-    calendar filter/.initial={}
+    calendar title/.initial=A default title,
+    calendar filter/.initial={},
+    calendar bg/.initial=white,
+    calendar images/.initial=images
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,6 +53,14 @@
 \renewcommand*{\title}[1]{%
     \titleoriginal{#1}
     \tikzset{/tikz/calendar title=#1}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Set the color + opacity
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\setBackground}[2]{%
+    \tikzset{/tikz/calendar bg=#1}
+    \tikzset{/tikz/calendar opacity=#2}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -94,7 +102,7 @@
         %% The calendar bg
         %%%%%%%%%%
         \node[anchor=center,
-            fill=white,
+            fill=\pgfkeysvalueof{/tikz/calendar bg},
             fill opacity=\pgfkeysvalueof{/tikz/calendar opacity},
             minimum height=0.25*\textheight,
             minimum width=0.8*\textwidth] (background)
@@ -106,7 +114,7 @@
             at ([yshift=.25\textheight]current page.south) {%
                 \begin{minipage}{0.7\textwidth}
                     \centering
-                    \Huge\calyear\\
+                    \Huge\pgfkeysvalueof{/tikz/calendar year}\\
                     \vspace*{.05\textheight}
                     \huge{\pgfkeysvalueof{/tikz/calendar title}}
                 \end{minipage}
@@ -169,7 +177,7 @@
         %% The calendar bg
         %%%%%%%%%%
         \node[anchor=north,
-            fill=white,
+            fill=\pgfkeysvalueof{/tikz/calendar bg},
             fill opacity=\pgfkeysvalueof{/tikz/calendar opacity},
             minimum height=\calheight,
             minimum width=\paperwidth] (background)
@@ -191,7 +199,7 @@
         \node[anchor=north east,
             minimum height=0.05\textheight] (yearname)
             at ([xshift=-.5\paperwidth+\textwidth]topCenter) {%
-                \huge\calyear
+                \huge\pgfkeysvalueof{/tikz/calendar year}
             };
 
         %%%%%%%%%%
@@ -202,7 +210,7 @@
             at ($(bottomCenter)!0.5!(topCenter)$) {
                 \tikz[every day/.style={anchor=mid}] {\calendar[%
                     name=mycal,
-                    dates=\calyear-#2-01 to \calyear-#2-last,
+                    dates=\pgfkeysvalueof{/tikz/calendar year}-#2-01 to \pgfkeysvalueof{/tikz/calendar year}-#2-last,
                     day xshift=0.032*\textwidth, % times 0.03 is approx 1/33, 0.032 is 1/31
                     day list right, day code={% print weekday character + day number below
                         \node[name=\pgfcalendarsuggestedname,every day]{\tikzdaytext};
@@ -236,7 +244,7 @@
     %%%%%%%%%%
     %% Add mark to the given date
     %%%%%%%%%%
-    \tikzset{/tikz/calendar filter/.append={if (equals=\calyear-#1-#2) {\draw (0,0) circle (8pt);}}}
+    \tikzset{/tikz/calendar filter/.append={if (equals=\pgfkeysvalueof{/tikz/calendar year}-#1-#2) {\draw (0,0) circle (8pt);}}}
     %%%%%%%%%%
     %% Append the event description to the eventline.
     %% Initialise the pgf key if not already defined
