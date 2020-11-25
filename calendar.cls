@@ -36,6 +36,10 @@
     calendar title/.initial=A default title,
     calendar filter/.initial={},
     calendar bg/.initial=white,
+    calendar/summary xmargin/.initial=0.35,
+    calendar/summary ymargin/.initial=0.35,
+    calendar/summary rows/.initial=4,
+    calendar/summary columns/.initial=3
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -132,20 +136,26 @@
     \begin{tikzpicture}[remember picture,overlay,anchor=north]
         \node[anchor=center,opacity=0.2] (bg)
             at (current page.center) {
-            \pgfkeysgetvalue{/tikz/calendar/images/cover}{\coverImage}
             \if\paperwidth>\paperheight
                 %landscape
-                \includegraphics[height=\paperheight]{\coverImage}
+                \includegraphics[height=\paperheight]{\pgfkeysvalueof{/tikz/calendar/images/cover}}
             \else
                 %portrait
-                \includegraphics[width=\paperwidth]{\coverImage}
+                \includegraphics[width=\paperwidth]{\pgfkeysvalueof{/tikz/calendar/images/cover}}
             \fi
         };
-        \foreach \row in {1,...,4}
-            \foreach \column in {1,...,3} {
-                \pgfmathsetmacro\result{(int(round(\row-1)*3+\column))}
-                \node[anchor=center] () at ([xshift=(\paperwidth*(-0.35 +(\column - 1)/2*0.7)),yshift=(\paperheight*(0.35 - (\row - 1)/3*0.7))]current page.center) {
-                     \includegraphics[height=.2\paperheight]{\pgfkeysvalueof{/tikz/calendar/images/\result}}
+        \foreach \row in {1,...,\pgfkeysvalueof{/tikz/calendar/summary rows}}
+            \foreach \column in {1,...,\pgfkeysvalueof{/tikz/calendar/summary columns}} {
+                % Get the month as an integer without decimal point
+                \pgfmathsetmacro\month{(int(round(\row-1)*\pgfkeysvalueof{/tikz/calendar/summary columns}+\column))}
+                % Convenience vars: Get vars from pgf backend
+                \pgfmathsetmacro\xmargin{\pgfkeysvalueof{/tikz/calendar/summary xmargin}}
+                \pgfmathsetmacro\ymargin{\pgfkeysvalueof{/tikz/calendar/summary ymargin}}
+                \pgfmathsetmacro\xshift{\paperwidth*(\xmargin*((\column - 1) - 1))}
+                \pgfmathsetmacro\yshift{\paperheight*(\ymargin*(1-(\row - 1)/(\pgfkeysvalueof{/tikz/calendar/summary rows}-1)*2))}
+                \node[anchor=center] () at
+                    ([xshift=\xshift,yshift=\yshift]current page.center) {
+                     \includegraphics[height=.2\paperheight]{\pgfkeysvalueof{/tikz/calendar/images/\month}}
                 };
         }
     %% Have a grid of 4x3 or 3x4
