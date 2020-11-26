@@ -93,7 +93,7 @@
         %%%%%%%%%%
         \node[anchor=center] (names)
             at (current page.center) {
-            \if\paperwidth>\paperheight
+            \ifnum\paperwidth>\paperheight
                 %landscape
                 \includegraphics[height=\paperheight]{#1}
             \else
@@ -136,7 +136,7 @@
     \begin{tikzpicture}[remember picture,overlay,anchor=north]
         \node[anchor=center,opacity=0.2] (bg)
             at (current page.center) {
-            \if\paperwidth>\paperheight
+            \ifnum\paperwidth>\paperheight
                 %landscape
                 \includegraphics[height=\paperheight]{\pgfkeysvalueof{/tikz/calendar/images/cover}}
             \else
@@ -176,7 +176,7 @@
         %%%%%%%%%%
         \node[anchor=center] (names)
             at (current page.center){%
-            \if\paperwidth>\paperheight
+            \ifnum\paperwidth>\paperheight
                 %landscape
                 \includegraphics[height=\paperheight]{#2}
             \else
