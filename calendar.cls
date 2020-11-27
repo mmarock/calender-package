@@ -3,9 +3,9 @@
 \LoadClassWithOptions{article}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%   forwarded package options
-%%   size:   a4paper, a3paper, a2paper
-%%   layout: landscape OR portrait
+%   forwarded package options
+%   size:   a4paper, a3paper, a2paper
+%   layout: landscape OR portrait
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \RequirePackage[margin=2mm, verbose,nohead,nofoot]{geometry}
@@ -20,12 +20,12 @@
 \pagestyle{empty}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Do not indent the first line
+% Do not indent the first line
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \setlength{\parindent}{0pt}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Define some keys
+% Define some keys
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \pgfkeys{/tikz/.cd,%
     calendar height/.initial=.15\paperheight,
@@ -43,11 +43,11 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Rewrite the title macro, do call the
-%% default macro to set the pdf title.
-%%
-%% EXAMPLE: \title{My awesome calendar}
-%%
+% Rewrite the title macro, do call the
+% default macro to set the pdf title.
+%
+% EXAMPLE: \title{My awesome calendar}
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \let\titleoriginal\title
 \renewcommand*{\title}[1]{%
@@ -56,7 +56,7 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Set the color + opacity
+% Set the color + opacity
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\setBackground}[2]{%
     \tikzset{/tikz/calendar bg=#1}
@@ -64,32 +64,31 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Set the year
+% Set the year
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\setYear}[1]{%
     \tikzset{/tikz/calendar year=#1}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Set the calendar height
+% Set the calendar height
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\setHeight}[1]{%
     \tikzset{/tikz/calendar height=#1}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%% Create a cover page
-%%
-%% TODO specify title and date as nodes which can be styled
-%%
+% Create a cover page
+%
+% TODO specify title and date as nodes which can be styled
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \newcommand{\makeCover}[1]{%
     \begin{tikzpicture}[remember picture,overlay,anchor=north]
         %%%%%%%%%%
-        %% The image is first param.
-        %%
-        %% Save the image path afterwards
-        %% in /tikz/calendar/images/cover
+        % The image is first param.
+        %
+        % Save the image path afterwards
+        % in /tikz/calendar/images/cover
         %%%%%%%%%%
         \node[anchor=center] (names)
             at (current page.center) {
@@ -102,7 +101,7 @@
             \fi
         };
         %%%%%%%%%%
-        %% The calendar bg
+        % The calendar bg
         %%%%%%%%%%
         \node[anchor=center,
             fill=\pgfkeysvalueof{/tikz/calendar bg},
@@ -111,7 +110,7 @@
             minimum width=0.8*\textwidth] (background)
             at ([yshift=.25\textheight]current page.south) {};
         %%%%%%%%%%
-        %% The year + title
+        % The year + title
         %%%%%%%%%%
         \node[anchor=center]
             at ([yshift=.25\textheight]current page.south) {%
@@ -128,9 +127,9 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%%
-%% Create a last page
-%%
+%
+% Create a last page
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \newcommand*{\makeSummary}{%
     \begin{tikzpicture}[remember picture,overlay,anchor=north]
@@ -155,7 +154,7 @@
                 \pgfmathsetmacro\yshift{\paperheight*(\ymargin*(1-(\row - 1)/(\pgfkeysvalueof{/tikz/calendar/summary rows}-1)*2))}
                 \node[anchor=center] () at
                     ([xshift=\xshift,yshift=\yshift]current page.center) {
-                     \includegraphics[height=.2\paperheight]{\pgfkeysvalueof{/tikz/calendar/images/\month}}
+                     \includegraphics[height=.2\paperheight]{\pgfkeysvalueof{/tikz/calendar/months/img\month}}
                 };
         }
     %% Have a grid of 4x3 or 3x4
@@ -164,15 +163,14 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%% Typeset a month
-%%
-%% EXAMPLE: \makeMonth{01}{/path/to/image}
-%%
+% Typeset a month
+%
+% EXAMPLE: \makeMonth{01}{/path/to/image}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \newcommand*{\makeMonth}[2]{%
     \begin{tikzpicture}[remember picture,overlay,anchor=north]
         %%%%%%%%%%
-        %% The image is first param.
+        % The image is first param.
         %%%%%%%%%%
         \node[anchor=center] (names)
             at (current page.center){%
@@ -189,7 +187,7 @@
         \coordinate (bottomCenter) at (current page.south);
 
         %%%%%%%%%%
-        %% The calendar bg
+        % The calendar bg
         %%%%%%%%%%
         \node[anchor=north,
             fill=\pgfkeysvalueof{/tikz/calendar bg},
@@ -199,7 +197,7 @@
             at (topCenter) {};
 
         %%%%%%%%%%
-        %% Left month label
+        % Left month label
         %%%%%%%%%%
         \node[anchor=north west,
             minimum height=0.05\textheight]
@@ -209,7 +207,7 @@
             };
 
         %%%%%%%%%%
-        %% Right year label
+        % Right year label
         %%%%%%%%%%
         \node[anchor=north east,
             minimum height=0.05\textheight] (yearname)
@@ -218,8 +216,7 @@
             };
 
         %%%%%%%%%%
-        %% Wrapper is needed to
-        %% center it to the page
+        % Wrapper is needed to center it to the page
         %%%%%%%%%%
         \node[anchor=center] (calendar-wrapper)
             at ($(bottomCenter)!0.5!(topCenter)$) {
@@ -236,41 +233,41 @@
                 }
             };
         %%%%%%%%%%
-        %% Events
+        % Events
         %%%%%%%%%%
         \node[anchor=south west] (eventline)
             at([yshift=.5\paperheight-.5\textheight, xshift=.5\paperwidth-.5\textwidth]current page.south west)%
-                {\small\textit{\pgfkeysvalueof{/tikz/calendar/#1}}};
+                {\small\textit{\pgfkeysvalueof{/tikz/calendar/months/ev#1}}};
     \end{tikzpicture}
     %%%%%%%%%%
-    %% Save the image for the summary
+    % Save the image for the summary
     %%%%%%%%%%
-    \tikzset{/tikz/calendar/images/#1/.initial={#2}}
+    \tikzset{/tikz/calendar/months/img\number#1/.initial={#2}}
     \clearpage
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%% First parameter shall be the month,
-%% second parameter is the day of month
-%% third is the event description.
-%%
-%% The events must be given before typesetting the month.
-%%
-%% EXAMPLE: \addEvent{01}{01}{First day of the new year}
-%%
+% First parameter shall be the month,
+% second parameter is the day of month
+% third is the event description.
+%
+% The events must be given before typesetting the month.
+%
+% EXAMPLE: \addEvent{01}{01}{First day of the new year}
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \newcommand{\addEvent}[3]{%
     %%%%%%%%%%
-    %% Add mark to the given date
+    % Add mark to the given date
     %%%%%%%%%%
     \tikzset{/tikz/calendar filter/.append={if (equals=\pgfkeysvalueof{/tikz/calendar year}-#1-#2) {\draw (0,0) circle (8pt);}}}
     %%%%%%%%%%
-    %% Append the event description to the eventline.
-    %% Initialise the pgf key if not already defined
+    % Append the event description to the eventline.
+    % Initialise the pgf key if not already defined
     %%%%%%%%%%
-    \pgfkeysifdefined{/tikz/calendar/#1}{%
-        \tikzset{/tikz/calendar/#1/.append={,\ \pgfcalendarmonthshortname{#1} #2: #3}}
+    \pgfkeysifdefined{/tikz/calendar/months/ev#1}{%
+        \tikzset{/tikz/calendar/months/ev#1/.append={,\ \pgfcalendarmonthshortname{#1} #2: #3}}
     }{%
-        \tikzset{/tikz/calendar/#1/.initial={\pgfcalendarmonthshortname{#1} #2: #3}}
+        \tikzset{/tikz/calendar/months/ev#1/.initial={\pgfcalendarmonthshortname{#1} #2: #3}}
     }%
 }
