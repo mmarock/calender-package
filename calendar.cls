@@ -43,11 +43,23 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Helper function for scaling the images
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand*{\addImage}[1]{%
+    \ifnum\paperwidth>\paperheight%
+    %landscape
+        \includegraphics[height=\paperheight]{#1}%
+    \else%
+    %portrait
+        \includegraphics[width=\paperwidth]{#1}%
+    \fi
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Rewrite the title macro, do call the
 % default macro to set the pdf title.
 %
 % EXAMPLE: \title{My awesome calendar}
-%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \let\titleoriginal\title
 \renewcommand*{\title}[1]{%
@@ -87,14 +99,8 @@
 
         % The image path is the first parameter
         \node[anchor=center] (names)
-            at (current page.center) {
-            \ifnum\paperwidth>\paperheight
-                %landscape
-                \includegraphics[height=\paperheight]{#1}
-            \else
-                %portrait
-                \includegraphics[width=\paperwidth]{#1}
-            \fi
+            at (current page.center) {%
+            \addImage{#1}
         };
 
         % Set the calendar bg
@@ -108,7 +114,7 @@
         % Set the year + title
         \node[anchor=center]
             at ([yshift=.25\textheight]current page.south) {%
-                \begin{minipage}{0.7\textwidth}
+                \begin{minipage}{\textwidth}
                     \centering
                     \Huge\pgfkeysvalueof{/calendar year}\\
                     \vspace*{.05\textheight}
@@ -119,7 +125,7 @@
     \end{tikzpicture}
 
     % Save the cover image for the summary
-    \tikzset{/calendar/images/cover/.initial={#1}}
+    \tikzset{/calendar/ cover/.initial={#1}}
     \clearpage
 }
 
@@ -128,16 +134,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \newcommand*{\makeSummary}{%
     \begin{tikzpicture}[remember picture,overlay,anchor=north]
+        % Print the cover as background
         \node[anchor=center,opacity=0.2] (bg)
-            at (current page.center) {
-            \ifnum\paperwidth>\paperheight
-                %landscape
-                \includegraphics[height=\paperheight]{\pgfkeysvalueof{/calendar/images/cover}}
-            \else
-                %portrait
-                \includegraphics[width=\paperwidth]{\pgfkeysvalueof{/calendar/images/cover}}
-            \fi
+            at (current page.center){%
+            \addImage{\pgfkeysvalueof{/calendar/ cover}}%
         };
+
         \foreach \row in {1,...,\pgfkeysvalueof{/calendar/summary rows}}
             \foreach \column in {1,...,\pgfkeysvalueof{/calendar/summary columns}} {
                 % Get the month as an integer without decimal point
@@ -152,7 +154,6 @@
                      \includegraphics[height=.2\paperheight]{\pgfkeysvalueof{/calendar/months/img\month}}
                 };
         }
-    %% Have a grid of 4x3 or 3x4
     \end{tikzpicture}
     \clearpage
 }
@@ -167,16 +168,11 @@
         % The image is the second parameter
         \node[anchor=center] (names)
             at (current page.center){%
-            \ifnum\paperwidth>\paperheight
-                %landscape
-                \includegraphics[height=\paperheight]{#2}
-            \else
-                %portrait
-                \includegraphics[width=\paperwidth]{#2}
-            \fi
+            \addImage{#2}
         };
 
         \coordinate (topCenter) at ([yshift=\calheight]current page.south);
+        \coordinate (monthLine) at ([yshift={-0.5*height("A")}]topCenter);
         \coordinate (bottomCenter) at (current page.south);
 
         % The calendar bg
@@ -188,17 +184,14 @@
             at (topCenter) {};
 
         % Left month label
-        \node[anchor=north west,
-            minimum height=0.05\textheight]
-            (monthname)
-            at ([xshift=.5\paperwidth-\textwidth]topCenter) {%
+        \node[anchor=north west] (month)
+            at ([xshift=-.5\textwidth]monthLine) {%
                 \huge\pgfcalendarmonthname{#1}
             };
 
         % Right year label
-        \node[anchor=north east,
-            minimum height=0.05\textheight] (yearname)
-            at ([xshift=-.5\paperwidth+\textwidth]topCenter) {%
+        \node[anchor=north east] (year)
+            at ([xshift=.5\textwidth]monthLine) {%
                 \huge\pgfkeysvalueof{/calendar year}
             };
 
@@ -222,9 +215,10 @@
                 }%
             };
         % Events
-        \node[anchor=south west] (eventline)
-            at([yshift=.5\paperheight-.5\textheight, xshift=.5\paperwidth-.5\textwidth]current page.south west)%
-                {\small\textit{\pgfkeysvalueof{/calendar/months/ev#1}}};
+        \node[anchor=south west] (events)%
+            at([xshift=-.5\textwidth,yshift=(.5\paperheight-.5\textheight)] bottomCenter) {%
+                \small\textit{\pgfkeysvalueof{/calendar/months/ev#1}}%
+            };
     \end{tikzpicture}
     % Save the image for the summary
     \tikzset{/calendar/months/img\number#1/.initial={#2}}
