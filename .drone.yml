@@ -10,4 +10,4 @@ steps:
   - if ! podman --root="$PODMAN" image exists $PODMAN_IMAGE; then podman --root="$PODMAN" build -f Dockerfile -t $PODMAN_IMAGE; fi
   environment:
       PODMAN: "/home/drone-user/podman-cache"
-      PODMAN_IMAGE: my-texlive-calendar:2
+      PODMAN_IMAGE: my-texlive-calendar:3
