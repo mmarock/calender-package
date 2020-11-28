@@ -144,6 +144,7 @@
             \foreach \column in {1,...,\pgfkeysvalueof{/calendar/summary columns}} {
                 % Get the month as an integer without decimal point
                 \pgfmathsetmacro\month{(int(round(\row-1)*\pgfkeysvalueof{/calendar/summary columns}+\column))}
+                \pgfkeysgetvalue{/calendar/months/img\month}{\image}
                 % Convenience vars: Get vars from pgf backend
                 \pgfmathsetmacro\xmargin{\pgfkeysvalueof{/calendar/summary xmargin}}
                 \pgfmathsetmacro\ymargin{\pgfkeysvalueof{/calendar/summary ymargin}}
@@ -151,7 +152,7 @@
                 \pgfmathsetmacro\yshift{\paperheight*(\ymargin*(1-(\row - 1)/(\pgfkeysvalueof{/calendar/summary rows}-1)*2))}
                 \node[anchor=center] () at
                     ([xshift=\xshift,yshift=\yshift]current page.center) {
-                     \includegraphics[height=.2\paperheight]{\pgfkeysvalueof{/calendar/months/img\month}}
+                        \includegraphics[height=.2\paperheight]{\image}
                 };
         }
     \end{tikzpicture}
