@@ -1,7 +1,6 @@
 FROM my-texlive:2
 
-ENV TEXINPUTS=/tex
+RUN mkdir -p /usr/share/texmf/tex/latex/calendar
+ADD calendar.cls /usr/share/texmf/tex/latex/calendar/calendar.cls
 
-RUN mkdir ${TEXINPUTS}
-
-ADD calendar.cls ${TEXINPUTS}/calendar.cls
+RUN texhash
