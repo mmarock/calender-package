@@ -48,10 +48,10 @@
 \newcommand*{\addImage}[1]{%
     \ifnum\paperwidth>\paperheight%
     %landscape
-        \includegraphics[height=\paperheight]{#1}%
+        \includegraphics[height=\paperheight]{\expanded{#1}}%
     \else%
     %portrait
-        \includegraphics[width=\paperwidth]{#1}%
+        \includegraphics[width=\paperwidth]{\expanded{#1}}%
     \fi
 }
 
