@@ -1,0 +1,12 @@
+kind: pipeline
+type: exec
+name: default
+
+steps:
+- name: build image
+  commands:
+  - echo "Store images in $PODMAN"
+  - podman --root="$PODMAN" images
+  - if ! podman --root="$PODMAN" image exists "my-texlive-calendar:1"; then podman --root="$PODMAN" build -f Dockerfile -t my-texlive-calendar:1; fi
+  environment:
+      PODMAN: "/home/drone-user/podman-cache"
