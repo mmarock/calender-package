@@ -1,4 +1,4 @@
-FROM my-texlive:2
+FROM my-texlive:3
 
 RUN mkdir -p /usr/share/texmf/tex/latex/calendar
 ADD calendar.cls /usr/share/texmf/tex/latex/calendar/calendar.cls
