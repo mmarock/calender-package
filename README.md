@@ -16,5 +16,7 @@ the month is typeset by makeMonth macro.
     \addEvent{01}{01}{First day of the year}
     \makeMonth{/path/to/the/image.png}{1}
 
+    \makeSummary
+
 \end{document}
 ```
