@@ -1,6 +1,6 @@
 \ProvidesClass{calendar}[2018/10/03 A wallcalendar class for fun]
 \NeedsTeXFormat{LaTeX2e}
-\LoadClassWithOptions{article}
+\LoadClassWithOptions{scrarticle}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   forwarded package options
