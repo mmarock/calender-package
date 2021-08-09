@@ -89,12 +89,7 @@
     \tikzset{/calendar height=#1}
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% Create a cover page
-%
-% TODO specify title and date as nodes which can be styled
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-\newcommand{\makeCover}[1]{%
+\newenvironment{page}[1]{%
     \begin{tikzpicture}[remember picture,overlay,anchor=north]
 
         % The image path is the first parameter
@@ -102,76 +97,13 @@
             at (current page.center) {%
             \addImage{#1}
         };
-
-        % Set the calendar bg
-        \node[anchor=center,
-            fill=\pgfkeysvalueof{/calendar bg},
-            fill opacity=\pgfkeysvalueof{/calendar opacity},
-            minimum height=0.25*\textheight,
-            minimum width=0.8*\textwidth] (background)
-            at ([yshift=.25\textheight]current page.south) {};
-
-        % Set the year + title
-        \node[anchor=center]
-            at ([yshift=.25\textheight]current page.south) {%
-                \begin{minipage}{\textwidth}
-                    \centering
-                    \Huge\pgfkeysvalueof{/calendar year}\\
-                    \vspace*{.05\textheight}
-                    \huge{\pgfkeysvalueof{/calendar title}}
-                \end{minipage}
-            };
-
-    \end{tikzpicture}
-
-    % Save the cover image for the summary
-    \tikzset{/calendar/ cover/.initial={#1}}
-    \clearpage
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% Create a summary
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-\newcommand*{\makeSummary}{%
-    \begin{tikzpicture}[remember picture,overlay,anchor=north]
-        % Print the cover as background
-        \node[anchor=center,opacity=0.2] (bg)
-            at (current page.center){%
-            \addImage{\pgfkeysvalueof{/calendar/ cover}}%
-        };
-
-        \foreach \row in {1,...,\pgfkeysvalueof{/calendar/summary rows}}
-            \foreach \column in {1,...,\pgfkeysvalueof{/calendar/summary columns}} {
-                % Get the month as an integer without decimal point
-                \pgfmathsetmacro\month{(int(round(\row-1)*\pgfkeysvalueof{/calendar/summary columns}+\column))}
-                \pgfkeysgetvalue{/calendar/months/img\month}{\image}
-                % Convenience vars: Get vars from pgf backend
-                \pgfmathsetmacro\xmargin{\pgfkeysvalueof{/calendar/summary xmargin}}
-                \pgfmathsetmacro\ymargin{\pgfkeysvalueof{/calendar/summary ymargin}}
-                \pgfmathsetmacro\xshift{\paperwidth*(\xmargin*((\column - 1) - 1))}
-                \pgfmathsetmacro\yshift{\paperheight*(\ymargin*(1-(\row - 1)/(\pgfkeysvalueof{/calendar/summary rows}-1)*2))}
-                \node[anchor=center] () at
-                    ([xshift=\xshift,yshift=\yshift]current page.center) {
-                        \includegraphics[height=.2\paperheight]{\image}
-                };
-        }
+}{%
     \end{tikzpicture}
     \clearpage
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% Typeset a month
-%
-% EXAMPLE: \makeMonth{01}{/path/to/image}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-\newcommand*{\makeMonth}[2]{%
-    \begin{tikzpicture}[remember picture,overlay,anchor=north]
-        % The image is the second parameter
-        \node[anchor=center] (names)
-            at (current page.center){%
-            \addImage{#2}
-        };
-
+\newcommand{\printCalendar}[1]{%
+        % Some help variables
         \coordinate (topCenter) at ([yshift=\calheight]current page.south);
         \coordinate (monthLine) at ([yshift={-0.5*height("A")}]topCenter);
         \coordinate (bottomCenter) at (current page.south);
@@ -215,15 +147,89 @@
                         \pgfkeysvalueof{/calendar filter};
                 }%
             };
-        % Events
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% Create a cover page
+%
+% TODO specify title and date as nodes which can be styled
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\newcommand{\makeCover}[1]{%
+    \begin{page}{#1}
+        % Set the calendar bg
+        \node[anchor=center,
+            fill=\pgfkeysvalueof{/calendar bg},
+            fill opacity=\pgfkeysvalueof{/calendar opacity},
+            minimum height=0.25*\textheight,
+            minimum width=0.8*\textwidth] (background)
+            at ([yshift=.25\textheight]current page.south) {};
+
+        % Set the year + title
+        \node[anchor=center]
+            at ([yshift=.25\textheight]current page.south) {%
+                \begin{minipage}{\textwidth}
+                    \centering
+                    \Huge\pgfkeysvalueof{/calendar year}\\
+                    \vspace*{.05\textheight}
+                    \huge{\pgfkeysvalueof{/calendar title}}
+                \end{minipage}
+            };
+    \end{page}
+
+    % Save the cover image for the summary
+    \tikzset{/calendar/ cover/.initial={#1}}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% Create a summary
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\newcommand*{\makeSummary}{%
+    \begin{tikzpicture}[remember picture,overlay,anchor=north]
+        % Print the cover as background
+        \node[anchor=center,opacity=0.2] (bg)
+            at (current page.center){%
+            \addImage{\pgfkeysvalueof{/calendar/ cover}}%
+        };
+
+        \foreach \row in {1,...,\pgfkeysvalueof{/calendar/summary rows}}
+            \foreach \column in {1,...,\pgfkeysvalueof{/calendar/summary columns}} {
+                % Get the month as an integer without decimal point
+                \pgfmathsetmacro\month{(int(round(\row-1)*\pgfkeysvalueof{/calendar/summary columns}+\column))}
+                \pgfkeysgetvalue{/calendar/months/img\month}{\image}
+                % Convenience vars: Get vars from pgf backend
+                \pgfmathsetmacro\xmargin{\pgfkeysvalueof{/calendar/summary xmargin}}
+                \pgfmathsetmacro\ymargin{\pgfkeysvalueof{/calendar/summary ymargin}}
+                \pgfmathsetmacro\xshift{\paperwidth*(\xmargin*((\column - 1) - 1))}
+                \pgfmathsetmacro\yshift{\paperheight*(\ymargin*(1-(\row - 1)/(\pgfkeysvalueof{/calendar/summary rows}-1)*2))}
+                \node[anchor=center] () at
+                    ([xshift=\xshift,yshift=\yshift]current page.center) {
+                        \includegraphics[height=.2\paperheight]{\image}
+                };
+        }
+    \end{tikzpicture}
+    \clearpage
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% Typeset a month
+%
+% EXAMPLE: \makeMonth{01}{/path/to/image}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\newcommand*{\makeMonth}[2]{%
+    \begin{page}{#2}
+        % calendar part
+        \printCalendar{#1}
+        % events
+        %\printEvents{#1}
         \node[anchor=south west] (events)%
             at([xshift=-.5\textwidth,yshift=(.5\paperheight-.5\textheight)] bottomCenter) {%
                 \small\textit{\pgfkeysvalueof{/calendar/months/ev#1}}%
             };
-    \end{tikzpicture}
+
+    \end{page}
+
     % Save the image for the summary
     \tikzset{/calendar/months/img\number#1/.initial={#2}}
-    \clearpage
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
