@@ -3,9 +3,22 @@ type: exec
 name: default
 
 steps:
-- name: build image
+- name: build latest
   commands:
-  - podman images
-  - if ! podman image exists $PODMAN_IMAGE; then podman build -f Dockerfile -t $PODMAN_IMAGE; fi
+  - podman build -f Dockerfile -t "${DRONE_REPO_NAME}:latest"
   environment:
-      PODMAN_IMAGE: my-texlive-calendar:9
+    HOME: /home/drone-user
+  when:
+    event: push
+- name: build release
+  commands:
+    - podman tag "${DRONE_REPO_NAME}:latest" "${DRONE_REPO_NAME}:${DRONE_TAG}"
+  environment:
+    HOME: /home/drone-user
+  when:
+    event: tag
+
+trigger:
+  event:
+  - push
+  - tag
