@@ -150,30 +150,37 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% Create a front
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\newcommand{\makeFront}{%
+    % Set the calendar bg
+    \node[anchor=center,
+        fill=\pgfkeysvalueof{/calendar bg},
+        fill opacity=\pgfkeysvalueof{/calendar opacity},
+        minimum height=0.25*\textheight,
+        minimum width=0.8*\textwidth] (background)
+        at ([yshift=.25\textheight]current page.south) {};
+
+    % Set the year + title
+    \node[anchor=center]
+        at ([yshift=.25\textheight]current page.south) {%
+            \begin{minipage}{\textwidth}
+                \centering
+                \Huge\pgfkeysvalueof{/calendar year}\\
+                \vspace*{.05\textheight}
+                \huge{\pgfkeysvalueof{/calendar title}}
+            \end{minipage}
+        };
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % Create a cover page
 %
 % TODO specify title and date as nodes which can be styled
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \newcommand{\makeCover}[1]{%
     \begin{page}{#1}
-        % Set the calendar bg
-        \node[anchor=center,
-            fill=\pgfkeysvalueof{/calendar bg},
-            fill opacity=\pgfkeysvalueof{/calendar opacity},
-            minimum height=0.25*\textheight,
-            minimum width=0.8*\textwidth] (background)
-            at ([yshift=.25\textheight]current page.south) {};
-
-        % Set the year + title
-        \node[anchor=center]
-            at ([yshift=.25\textheight]current page.south) {%
-                \begin{minipage}{\textwidth}
-                    \centering
-                    \Huge\pgfkeysvalueof{/calendar year}\\
-                    \vspace*{.05\textheight}
-                    \huge{\pgfkeysvalueof{/calendar title}}
-                \end{minipage}
-            };
+        \makeFront
     \end{page}
 
     % Save the cover image for the summary
