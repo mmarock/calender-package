@@ -27,16 +27,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \pgfkeys{%
     /calendar/.cd,
-    .style={
+    .style={%
         color=black,
         text opacity=1,
         fill=white,
         fill opacity=0.6
-    },
-    front/.style={
-        color=black,
-        fill=white,
-        fill opacity=0.8
     },
     summary/.style={
         color=black,
@@ -53,6 +48,17 @@
     summary columns/.initial=3,
     weekend/.initial={},
     weekend/.style={text=red!60!black},
+}
+
+\pgfkeys{%
+    /calendar/front/.cd,
+    .style={%
+        color=black,
+        fill=white,
+        fill opacity=0.8
+    },
+    minimum height/.initial=.25\textheight,
+    minimum width/.initial=.8*\textwidth
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -104,7 +110,6 @@
 
 \newenvironment{page}[1]{%
     \begin{tikzpicture}[remember picture,overlay,anchor=north]
-
         % The image path is the first parameter
         \node[anchor=center] (names)
             at (current page.center) {%
@@ -116,51 +121,47 @@
 }
 
 \newcommand{\printCalendar}[1]{%
-        % Some help variables
+    % Some help variables
     \coordinate (topCenter) at ([yshift=\pgfkeysvalueof{/calendar/height}]current page.south);
-        \coordinate (monthLine) at ([yshift={-0.5*height("A")}]topCenter);
-        \coordinate (bottomCenter) at (current page.south);
+    \coordinate (topLeft) at ([yshift=\pgfkeysvalueof{/calendar/height}]current page.south west);
+    \coordinate (bottomCenter) at (current page.south);
+    \coordinate (monthLine) at ([yshift={-0.5*height("A")}]topCenter);
 
-        % The calendar bg
-        \node[anchor=north,
-            /calendar,
-            minimum height=\pgfkeysvalueof{/calendar/height},
-            minimum width=\paperwidth] (background)
-            at (topCenter) {};
-
+    \begin{scope}[/calendar]
+        % The calendar background
+        \fill (topLeft) rectangle (current page.south east);
         % Left month label
-        \node[anchor=north west, /calendar, fill=none] (month)
+        \node[anchor=north west, fill=none] (month)
             at ([xshift=-.5\textwidth]monthLine) {%
                 \huge\pgfcalendarmonthname{#1}
             };
-
         % Right year label
-        \node[anchor=north east, /calendar, fill=none] (year)
+        \node[anchor=north east, fill=none] (year)
             at ([xshift=.5\textwidth]monthLine) {%
                 \huge\pgfkeysvalueof{/calendar/year}
             };
-
-        % Wrapper is needed to center it to the page.
-        % In fact this is one suggested solution in the manual..
-        \node[anchor=center] (calendar-wrapper)
-            at ($(bottomCenter)!0.5!(topCenter)$) {
-                \tikz \calendar[%
-                    /calendar,
-                    every day/.style={anchor=mid},
-                    name=mycal,
-                    dates=\pgfkeysvalueof{/calendar/year}-#1-01 to \pgfkeysvalueof{/calendar/year}-#1-last,
-                    day xshift=0.032*\textwidth, % times 0.03 is approx 1/33, 0.032 is 1/31
-                    day list right, day code={% print weekday character + day number below
-                        \node[name=\pgfcalendarsuggestedname,every day]{%
-                            \tikzdaytext%
-                        };
-                        \node[name=thisday,every day, anchor=mid] at (0,0.5cm) {%
-                            \pgfcalendarweekdayshortname{\pgfcalendarcurrentweekday}%
-                        };
-                    }]
-                    if (weekend) [/calendar/weekend]%
-                        \pgfkeysvalueof{/calendar/weekend};
-            };
+    \end{scope}
+    % Wrapper is needed to center it to the page.
+    % In fact this is one suggested solution in the manual..
+    \node[anchor=center] (calendar-wrapper)
+        at ($(bottomCenter)!0.5!(topCenter)$) {
+            \tikz \calendar[%
+                /calendar,
+                every day/.style={anchor=mid},
+                name=mycal,
+                dates=\pgfkeysvalueof{/calendar/year}-#1-01 to \pgfkeysvalueof{/calendar/year}-#1-last,
+                day xshift=0.032*\textwidth, % times 0.03 is approx 1/33, 0.032 is 1/31
+                day list right, day code={% print weekday character + day number below
+                    \node[name=\pgfcalendarsuggestedname,every day]{%
+                        \tikzdaytext%
+                    };
+                    \node[name=thisday,every day, anchor=mid] at (0,0.5cm) {%
+                        \pgfcalendarweekdayshortname{\pgfcalendarcurrentweekday}%
+                    };
+                }]
+                if (weekend) [/calendar/weekend]%
+                    \pgfkeysvalueof{/calendar/weekend};
+        };
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -170,9 +171,9 @@
     % Set the calendar bg
     \node[anchor=center,
         /calendar/front,
-        minimum height=0.25*\textheight,
-        minimum width=0.8*\textwidth] (background)
-        at ([yshift=.25\textheight]current page.south) {
+        minimum height=\pgfkeysvalueof{/calendar/front/minimum height},
+        minimum width=\pgfkeysvalueof{/calendar/front/minimum width}] (background)
+        at ([yshift=-0.15*\paperheight]current page.center) {
         % Set the year + title
         \begin{minipage}{\textwidth}
             \centering
@@ -181,7 +182,6 @@
             \huge{\pgfkeysvalueof{/calendar/title}}
         \end{minipage}
     };
-
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
