@@ -36,6 +36,7 @@
     height/.initial=.15\paperheight,
     year/.initial=2021,
     title/.initial=A default title,
+    author/.initial=A default author,
     marker/.initial={\draw[/calendar, thick, fill=none] (0,0) circle (\f@size pt * 0.7);},
     weekend/.initial={},
     weekend/.style={text=red!60!black},
@@ -87,6 +88,18 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Rewrite the author macro, do call the
+% default macro to set the pdf author as well.
+%
+% EXAMPLE: \author{My awesome calendar}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\let\authororiginal\author
+\renewcommand*{\author}[1]{%
+    \authororiginal{#1}
+    \tikzset{/calendar/author=#1}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set global tikz keys
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand*{\gtikzset}[1]{%
@@ -94,14 +107,6 @@
      \globaldefs=1\relax%
      \pgfqkeys{/tikz}{#1}%
     \endgroup%
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Set the color + opacity
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\setBackground}[2]{%
-    %\tikzset{/calendar/bg=#1}
-    %\tikzset{/calendar/opacity=#2}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -231,7 +236,12 @@
                     ([xshift=\xshift,yshift=\yshift]current page.center) {
                         \includegraphics[height=.2\paperheight]{\image}
                 };
-        }
+        };
+
+        \node[/calendar, anchor=south, text opacity=1, fill=none]%
+            at ([yshift={.5\paperheight-.5\textheight}]current page.south) {%
+                \small\textit{Made by \pgfkeysvalueof{/calendar/author}}
+        };
     \end{tikzpicture}
     \clearpage
 }
