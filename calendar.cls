@@ -33,24 +33,24 @@
         fill=white,
         fill opacity=0.6
     },
-    summary/.style={
-        color=black,
-        fill=white,
-        fill opacity=0.6
-    },
     height/.initial=.15\paperheight,
     year/.initial=2021,
     title/.initial=A default title,
     marker/.initial={\draw[/calendar, thick, fill=none] (0,0) circle (\f@size pt * 0.7);},
-    summary xmargin/.initial=0.35,
-    summary ymargin/.initial=0.35,
-    summary rows/.initial=4,
-    summary columns/.initial=3,
     weekend/.initial={},
     weekend/.style={text=red!60!black},
-}
-
-\pgfkeys{%
+    % summary keys
+    /calendar/summary/.cd,
+    .style={
+        color=black,
+        fill=white,
+        fill opacity=0.6
+    },
+    columns/.initial=3,
+    rows/.initial=4,
+    xmargin/.initial=0.35,
+    ymargin/.initial=0.35,
+    % front keys
     /calendar/front/.cd,
     .style={%
         color=black,
@@ -84,6 +84,16 @@
 \renewcommand*{\title}[1]{%
     \titleoriginal{#1}
     \tikzset{/calendar/title=#1}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Set global tikz keys
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand*{\gtikzset}[1]{%
+    \begingroup%
+     \globaldefs=1\relax%
+     \pgfqkeys{/tikz}{#1}%
+    \endgroup%
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -164,6 +174,18 @@
         };
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Create a cover page
+%
+% TODO specify title and date as nodes which can be styled
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\makeCover}[1]{%
+    \begin{coverPage}{#1}
+        \makeFront
+    \end{coverPage}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % Create a front
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -173,7 +195,7 @@
         /calendar/front,
         minimum height=\pgfkeysvalueof{/calendar/front/minimum height},
         minimum width=\pgfkeysvalueof{/calendar/front/minimum width}] (background)
-        at ([yshift=-0.15*\paperheight]current page.center) {
+        at ([yshift=-0.20*\paperheight]current page.center) {
         % Set the year + title
         \begin{minipage}{\textwidth}
             \centering
@@ -182,30 +204,6 @@
             \huge{\pgfkeysvalueof{/calendar/title}}
         \end{minipage}
     };
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Store the cover image 
-%
-% SEE: \makeCover
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand*{\storeCover}[1]{%
-    % Save the image for the summary
-    \tikzset{/calendar/cover/.initial={#1}}
-}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% Create a cover page
-%
-% TODO specify title and date as nodes which can be styled
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-\newcommand{\makeCover}[1]{%
-    \begin{page}{#1}
-        \makeFront
-    \end{page}
-
-    \storeCover{#1}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -219,16 +217,16 @@
             \addImage{\pgfkeysvalueof{/calendar/cover}}%
         };
 
-        \foreach \row in {1,...,\pgfkeysvalueof{/calendar/summary rows}}
-            \foreach \column in {1,...,\pgfkeysvalueof{/calendar/summary columns}} {
+        \foreach \row in {1,...,\pgfkeysvalueof{/calendar/summary/rows}}
+            \foreach \column in {1,...,\pgfkeysvalueof{/calendar/summary/columns}} {
                 % Get the month as an integer without decimal point
-                \pgfmathsetmacro\month{(int(round(\row-1)*\pgfkeysvalueof{/calendar/summary columns}+\column))}
+                \pgfmathsetmacro\month{(int(round(\row-1)*\pgfkeysvalueof{/calendar/summary/columns}+\column))}
                 \pgfkeysgetvalue{/calendar/months/img\month}{\image}
                 % Convenience vars: Get vars from pgf backend
-                \pgfmathsetmacro\xmargin{\pgfkeysvalueof{/calendar/summary xmargin}}
-                \pgfmathsetmacro\ymargin{\pgfkeysvalueof{/calendar/summary ymargin}}
+                \pgfmathsetmacro\xmargin{\pgfkeysvalueof{/calendar/summary/xmargin}}
+                \pgfmathsetmacro\ymargin{\pgfkeysvalueof{/calendar/summary/ymargin}}
                 \pgfmathsetmacro\xshift{\paperwidth*(\xmargin*((\column - 1) - 1))}
-                \pgfmathsetmacro\yshift{\paperheight*(\ymargin*(1-(\row - 1)/(\pgfkeysvalueof{/calendar/summary rows}-1)*2))}
+                \pgfmathsetmacro\yshift{\paperheight*(\ymargin*(1-(\row - 1)/(\pgfkeysvalueof{/calendar/summary/rows}-1)*2))}
                 \node[anchor=center] () at
                     ([xshift=\xshift,yshift=\yshift]current page.center) {
                         \includegraphics[height=.2\paperheight]{\image}
@@ -239,18 +237,33 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Store a monthly image for the summary
-%
-% This seems to be a problem to automate since
-% pgf variables are bound to Tex groups.
-% It seems, that environments create groups and I don't
-% find an easy path to set global vars.
-%
-% SEE: \makeMonth
+% Typeset a month with an open tikzpicture
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand*{\storeMonthImage}[2]{%
-    % Save the image for the summary
-    \tikzset{/calendar/months/img\number#1/.initial={#2}}
+\newenvironment*{monthPage}[2]{%
+    \gtikzset{/calendar/months/img\number#1/.initial={#2}}
+    \begin{page}{#2}
+}{%
+    \end{page}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Print an event line
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\printEvents}[1]{%
+    \node[anchor=south west, /calendar, fill=none] (events)%
+        at([xshift=-.5\textwidth,yshift=(.5\paperheight-.5\textheight)] bottomCenter) {%
+            \small\textit{\pgfkeysvalueof{/calendar/months/ev#1}}%
+        };
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Typeset a cover with an open tikzpicture
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newenvironment*{coverPage}[1]{%
+    \gtikzset{/calendar/cover/.initial={#1}}
+    \begin{page}{#1}
+}{%
+    \end{page}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -259,17 +272,12 @@
 % EXAMPLE: \makeMonth{01}{/path/to/image}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \newcommand*{\makeMonth}[2]{%
-    \begin{page}{#2}
+    \begin{monthPage}{#1}{#2}
         % calendar part
         \printCalendar{#1}
         % events
-        \node[anchor=south west, /calendar, fill=none] (events)%
-            at([xshift=-.5\textwidth,yshift=(.5\paperheight-.5\textheight)] bottomCenter) {%
-                \small\textit{\pgfkeysvalueof{/calendar/months/ev#1}}%
-            };
-
-    \end{page}
-    \storeMonthImage{#1}{#2}
+        \printEvents{#1}
+    \end{monthPage}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
