@@ -38,6 +38,7 @@
     title/.initial=A default title,
     author/.initial=A default author,
     marker/.initial={\draw[/calendar, thick, fill=none] (0,0) circle (\f@size pt * 0.7);},
+    marker/.style={}
     weekend/.initial={},
     weekend/.style={text=red!60!black},
     % summary keys
@@ -301,7 +302,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \newcommand{\addEvent}[3]{%
     % Add mark to the given date
-    \tikzset{/calendar/weekend/.append={if (equals=\pgfkeysvalueof{/calendar/year}-#1-#2) {\pgfkeysvalueof{/calendar/marker}}}}
+    \tikzset{/calendar/weekend/.append={%
+        if (equals=\pgfkeysvalueof{/calendar/year}-#1-#2) [/calendar/marker]%
+        if (equals=\pgfkeysvalueof{/calendar/year}-#1-#2) {\pgfkeysvalueof{/calendar/marker}}%
+        }%
+    }%
     % Append the event description to the eventline.
     % Initialise the pgf key if not already defined
     \pgfkeysifdefined{/calendar/months/ev#1}{%
