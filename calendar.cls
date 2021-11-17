@@ -56,6 +56,8 @@
     /calendar/front/.cd,
     .style={%
         color=black,
+        double=black,
+        double distance=1mm,
         fill=white,
         fill opacity=0.8
     },
