@@ -94,7 +94,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set a subtitle (not yet used)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand*{\subtitle}[1]{%
+\renewcommand*{\subtitle}[1]{%
     \tikzset{/calendar/subtitle=#1}
 }
 
@@ -206,6 +206,26 @@
 % Create a front
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \newcommand{\makeFront}{%
+    % Set the calendar bg
+    \node[anchor=center,
+        /calendar/front,
+        minimum height=\pgfkeysvalueof{/calendar/front/minimum height},
+        minimum width=\pgfkeysvalueof{/calendar/front/minimum width}] (background)
+        at ([yshift=-0.20*\paperheight]current page.center) {
+        % Set the year + title
+        \begin{minipage}{\textwidth}
+            \centering
+            \Huge\pgfkeysvalueof{/calendar/year}\\
+            \vspace*{.05\textheight}
+            \huge{\pgfkeysvalueof{/calendar/title}}
+        \end{minipage}
+    };
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% Create a front with subtitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\newcommand{\makeFrontWithSubtitle}{%
     \node[anchor=center]
         at ($(current page.center)!.5!(current page.south)$) {%
         \begin{tikzpicture}
