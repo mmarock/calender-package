@@ -35,7 +35,8 @@
     },
     height/.initial=.15\paperheight,
     year/.initial=2021,
-    title/.initial=A default title,
+    title/.initial={A default title},
+    subtitle/.initial={A default subtitle},
     author/.initial=A default author,
     marker/.initial={\draw[/calendar, thick, fill=none] (0,0) circle (\f@size pt * 0.7);},
     marker/.style={}
@@ -88,6 +89,13 @@
 \renewcommand*{\title}[1]{%
     \titleoriginal{#1}
     \tikzset{/calendar/title=#1}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Set a subtitle (not yet used)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand*{\subtitle}[1]{%
+    \tikzset{/calendar/subtitle=#1}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -198,19 +206,21 @@
 % Create a front
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \newcommand{\makeFront}{%
-    % Set the calendar bg
-    \node[anchor=center,
-        /calendar/front,
-        minimum height=\pgfkeysvalueof{/calendar/front/minimum height},
-        minimum width=\pgfkeysvalueof{/calendar/front/minimum width}] (background)
-        at ([yshift=-0.20*\paperheight]current page.center) {
-        % Set the year + title
-        \begin{minipage}{\textwidth}
-            \centering
-            \Huge\pgfkeysvalueof{/calendar/year}\\
-            \vspace*{.05\textheight}
-            \huge{\pgfkeysvalueof{/calendar/title}}
-        \end{minipage}
+    \node[anchor=center]
+        at ($(current page.center)!.5!(current page.south)$) {%
+        \begin{tikzpicture}
+            \draw[/calendar/front, local bounding box=rect]
+                (0,0) rectangle (.7\textwidth, 0.33\textheight)
+                node[anchor=center] at ($(rect.north)!0.2!(rect.south)$) {%
+                    \huge\pgfkeysvalueof{/calendar/year}%
+                }
+                node[anchor=center] at ($(rect.north)!0.5!(rect.south)$) {%
+                    \Huge\pgfkeysvalueof{/calendar/title}
+                }
+                node[anchor=center] at ($(rect.north)!0.8!(rect.south)$) {%
+                    \pgfkeysvalueof{/calendar/subtitle}
+                };
+        \end{tikzpicture}
     };
 }
 
