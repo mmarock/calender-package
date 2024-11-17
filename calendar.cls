@@ -151,6 +151,7 @@
     \coordinate (topCenter) at ([yshift=\pgfkeysvalueof{/calendar/height}]current page.south);
     \coordinate (topLeft) at ([yshift=\pgfkeysvalueof{/calendar/height}]current page.south west);
     \coordinate (bottomCenter) at (current page.south);
+    \coordinate (bottomRight) at (current page.south east);
     \coordinate (monthLine) at ([yshift={-0.5*height("A")}]topCenter);
 
     \begin{scope}[/calendar]
@@ -271,8 +272,8 @@
                 };
         };
 
-        \node[/calendar, anchor=south, text opacity=1, fill=none]%
-            at ([yshift={.5\paperheight-.5\textheight}]current page.south) {%
+        \node[/calendar/summary, anchor=south, text opacity=1, fill=none]%
+            at ([yshift={.5*\paperheight-.5*\textheight-.5*\f@size}]current page.south) {%
                 \small\textit{Made by \pgfkeysvalueof{/calendar/author}}
         };
     \end{tikzpicture}
@@ -292,10 +293,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Print an event line
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\printEvents}[1]{%
+\newcommand{\printEventline}[1]{%
     \node[anchor=south west, /calendar, fill=none] (events)%
-        at([xshift=-.5\textwidth,yshift=(.5\paperheight-.5\textheight)] bottomCenter) {%
+        at([xshift=-.5*\textwidth,yshift=(.5*\paperheight-.5*\textheight)] bottomCenter) {%
             \small\textit{\pgfkeysvalueof{/calendar/months/ev#1}}%
+        };
+
+    \node[anchor=south east, /calendar, fill=none] (description)%
+        at([xshift=(-.5*\paperwidth+.5*\textwidth),yshift=(.5*\paperheight-.5*\textheight)] bottomRight) {%
+            \small\textit{\pgfkeysvalueof{/calendar/months/desc#1}}%
         };
 }
 
@@ -319,7 +325,7 @@
         % calendar part
         \printCalendar{#1}
         % events
-        \printEvents{#1}
+        \printEventline{#1}
     \end{monthPage}
 }
 
@@ -345,5 +351,23 @@
         \tikzset{/calendar/months/ev#1/.append={,\ \pgfcalendarmonthshortname{#1} #2: #3}}
     }{%
         \tikzset{/calendar/months/ev#1/.initial={\pgfcalendarmonthshortname{#1} #2: #3}}
+    }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% First parameter shall be the month,
+% second is the month description.
+%
+% The description must be given before typesetting the month.
+%
+% EXAMPLE: \addText{01}{This image is because...}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\newcommand{\addText}[2]{%
+    % Append the month description to the eventline.
+    % Initialise the pgf key if not already defined
+    \pgfkeysifdefined{/calendar/months/desc#1}{%
+        \tikzset{/calendar/months/desc#1/.append={#2}}
+    }{%
+        \tikzset{/calendar/months/desc#1/.initial={#2}}
     }%
 }
