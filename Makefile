@@ -1,14 +1,13 @@
 
-LATEX_COMPILER := lualatex
-LATEX_OPTS := -interaction=nonstopmode -halt-on-error
+LATEX_COMPILER := $(shell which lualatex)
 
-calendar := main
+calendar := test
 
 all: $(foreach x, ${calendar}, ${x}.pdf)
 
-%.pdf: %.tex calendar.cls
-	${LATEX_COMPILER} ${LATEX_OPTS} $< && \
-	${LATEX_COMPILER} ${LATEX_OPTS} $<
+%.pdf: %.tex calendar.cls $(wildcard images/*.png)
+	lualatex -interaction=nonstopmode -halt-on-error $< && \
+	lualatex -interaction=nonstopmode -halt-on-error $<
 
 clean:
 	$(foreach x, ${calendar}, @rm ${x}.pdf;)

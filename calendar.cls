@@ -122,6 +122,9 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set the year
+%
+% param 1 - the year
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\setYear}[1]{%
     \tikzset{/calendar/year=#1}
@@ -129,11 +132,17 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set the calendar height
+%
+% param 1 - value [0,\paperheight]
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\setHeight}[1]{%
     \tikzset{/calendar/height=#1}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Set the calendar height
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newenvironment{page}[1]{%
     \begin{tikzpicture}[remember picture,overlay,anchor=north]
         % The image path is the first parameter
@@ -146,6 +155,12 @@
     \clearpage
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Print the calendar part
+%
+% param 1 - month
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\printCalendar}[1]{%
     % Some help variables
     \coordinate (topCenter) at ([yshift=\pgfkeysvalueof{/calendar/height}]current page.south);
@@ -195,6 +210,8 @@
 % Create a cover page
 %
 % TODO specify title and date as nodes which can be styled
+%
+% param 1 - path to the cover image
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\makeCover}[1]{%
@@ -292,6 +309,9 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Print an event line
+%
+% param 1 - month
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\printEventline}[1]{%
     \node[anchor=south west, /calendar, fill=none] (events)%
@@ -336,6 +356,10 @@
 %
 % The events must be given before typesetting the month.
 %
+% param 1 - month
+% param 2 - day of month
+% param 3 - description
+%
 % EXAMPLE: \addEvent{01}{01}{First day of the new year}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \newcommand{\addEvent}[3]{%
@@ -359,6 +383,9 @@
 % second is the month description.
 %
 % The description must be given before typesetting the month.
+%
+% param 1 - month
+% param 2 - text to display
 %
 % EXAMPLE: \addText{01}{This image is because...}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 

@@ -1,0 +1,46 @@
+\documentclass[fontsize=13pt,a4paper,english]{calendar}
+
+\geometry{papersize={301mm,214mm}}
+\geometry{margin=6mm}
+
+\title{A foo bar calendar}
+\author{Your name}
+
+\setYear{2025}
+
+\begin{document}
+
+\setHeight{0.2\paperheight}
+
+\addEvent{01}{01}{foo}
+\addEvent{02}{01}{bar}
+\addEvent{03}{01}{foo}
+\addEvent{04}{01}{bar}
+\addEvent{05}{01}{foo}
+\addEvent{06}{01}{bar}
+\addEvent{07}{01}{foo}
+\addEvent{08}{01}{bar}
+\addEvent{09}{01}{foo}
+\addEvent{10}{01}{bar}
+\addEvent{11}{01}{foo}
+\addEvent{12}{01}{bar}
+
+\addText{01}{Just a text}
+
+\makeCover{images/test3.png}
+\makeMonth{01}{images/test.png}
+\makeMonth{02}{images/test.png}
+\makeMonth{03}{images/test.png}
+\makeMonth{04}{images/test.png}
+\makeMonth{05}{images/test.png}
+\makeMonth{06}{images/test.png}
+\makeMonth{07}{images/test.png}
+\makeMonth{08}{images/test.png}
+\makeMonth{09}{images/test.png}
+\makeMonth{10}{images/test2.png}
+\makeMonth{11}{images/test.png}
+\makeMonth{12}{images/test.png}
+
+\makeSummary
+
+\end{document}
